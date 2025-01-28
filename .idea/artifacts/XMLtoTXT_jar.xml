@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="XMLtoTXT:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/XMLtoTXT_jar</output-path>
+    <root id="archive" name="XMLtoTXT.jar">
+      <element id="module-output" name="XMLtoTXT" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
