@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -26,6 +27,7 @@ public class Main {
     private static int det = 0;
     private static int vol = 0;
     private static int rastro = 0;
+    private static int chavesRef = 0;
 
     /**
      * Realiza a leitura e parser do xml, deixando os dados disponiveis em um
@@ -52,9 +54,8 @@ public class Main {
 //Itera atributos filhos
             while (i_atr.hasNext()) {
                 Attribute atrib = (Attribute) i_atr.next();
-
-//                System.out.println("\n-----attribute de (" + nfe.getName() +"):" + atrib.getName() +" - valor:" + atrib.getValue());
             }
+
 //Recupera elementos filhos (children)
             List elements = nfe.getChildren();
             Iterator i = elements.iterator();
@@ -62,7 +63,6 @@ public class Main {
 //Itera elementos filhos, e filhos do dos filhos
             while (i.hasNext()) {
                 Element element = (Element) i.next();
-//                System.out.println("---1----element:" + element.getName());
                 list = trataElement(element);
             }
 
@@ -85,8 +85,6 @@ public class Main {
 //Itera atributos filhos
         while (i_atr.hasNext()) {
             Attribute atrib = (Attribute) i_atr.next();
-//            System.out.println("\n+++attribute de (" + element.getName() + "):" + atrib.getName() + " - valor:" + atrib.getValue());
-
             String x = (element.getName());
             if (element.getName().equals("det")) {
                 rastro = 0;
@@ -131,8 +129,12 @@ public class Main {
                 if ((element.getName() + "." + el.getName()).equals("prod.rastro")) {
                     rastro++;
                 }
-//                System.out.println("prod" + itemDet + "." + element.getName() + rastro + "." + el.getName());
                 list.put("prod" + itemDet + "." + element.getName() + rastro + "." + el.getName(), new String(el.getText()));
+            } else if ((element.getName() + "." + el.getName()).contains("NFref")) {
+                if ((element.getName() + "." + el.getName()).equals("NFref.refNFe")) {
+                    chavesRef++;
+                    list.put((element.getName() + "." + chavesRef), new String(el.getText()));
+                }
             } else if ((element.getName() + "." + el.getName()).contains(".dup") || (element.getName() + "." + el.getName()).contains("dup.")) {
                 list.put(element.getName() + dup + "." + el.getName(), new String(el.getText()));
             } else {
@@ -141,7 +143,21 @@ public class Main {
                 }
                 list.put(element.getName() + itemDet + "." + el.getName(), new String(el.getText()));
             }
-//            System.out.println("--------------------------------" + el.getName());
+//            if ((element.getName() + "." + el.getName()).contains("rastro")) {
+//                if ((element.getName() + "." + el.getName()).equals("prod.rastro")) {
+//                    rastro++;
+//                }
+//                list.put("prod" + itemDet + "." + element.getName() + rastro + "." + el.getName(), new String(el.getText()));
+//            } else if ((element.getName() + "." + el.getName()).contains(".dup") || (element.getName() + "." + el.getName()).contains("dup.")) {
+//                list.put(element.getName() + dup + "." + el.getName(), new String(el.getText()));
+//            } else {
+//                if (tags.contains(element.getName()) && !element.getName().contains("det")) {
+//                    itemDet = "";
+//                }
+//                list.put(element.getName() + itemDet + "." + el.getName(), new String(el.getText()));
+//            }
+
+            //            System.out.println("--------------------------------" + el.getName());
             trataElement(el);
         }
         vol = 0;
@@ -536,8 +552,12 @@ public class Main {
         o.append("B|" + x.get("ide.cUF") + "|" + x.get("ide.cNF") + "|" + x.get("ide.natOp") + "|" + x.get("ide.mod") + "|" + x.get("ide.serie") + "|" + x.get("ide.nNF") + "|" + x.get("ide.dhEmi") + "|" + x.get("ide.dhSaiEnt") + "|" + x.get("ide.tpNF") + "|" + x.get("ide.idDest") + "|" + x.get("ide.cMunFG") + "|" + x.get("ide.tpImp") + "|" + x.get("ide.tpEmis") + "|" + x.get("ide.cDV") + "|" + x.get("ide.tpAmb") + "|" + x.get("ide.finNFe") + "|" + x.get("ide.indFinal") + "|" + x.get("ide.indPres") + "|" + x.get("ide.procEmi") + "|" + x.get("ide.verProc") + "|" + x.get("ide.dhCont") + "|" + x.get("ide.xJust") + "|\n");
 
 //Complementos de B
-        if (x.get("NFref.refNFe") != null) {
-            o.append("B13|" + x.get("NFref.refNFe") + "|\n");
+        if (x.get("NFref.1") != null) {
+            int i = 1;
+            while (x.get("NFref." + i) != null) {
+                o.append("B13|" + x.get("NFref." + i) + "|\n");
+                i++;
+            }
         } else if (x.get("refNF.AAMM") != null && x.get("refNF.CNPJ") != null) {
             o.append("B14|" + x.get("refNF.cUF") + "|" + x.get("refNF.AAMM") + "|" + x.get("refNF.CNPJ") + "|" + x.get("refNF.mod") + "|" + x.get("refNF.serie") + "|" + x.get("refNF.nNF") + "|\n");
         } else if (x.get("refNFP.AAMM") != null && x.get("refNFP.IE") != null) {
@@ -553,7 +573,35 @@ public class Main {
             o.append("B20j|" + x.get("refECF.mod") + "|" + x.get("refECF.nECF") + "|" + x.get("refECF.nCOO") + "|");
         }
 //        ----------------------------------------------------
-        o.append("C|").append(x.get("emit.xNome")).append("|").append(x.get("emit.xFant")).append("|").append(x.get("emit.IE")).append("|").append(x.get("emit.IEST")).append("|").append(x.get("emit.IM")).append("|").append(x.get("emit.CNAE")).append("|").append(x.get("emit.CRT")).append("|\n");
+        o.append("C|").
+
+                append(x.get("emit.xNome")).
+
+                append("|").
+
+                append(x.get("emit.xFant")).
+
+                append("|").
+
+                append(x.get("emit.IE")).
+
+                append("|").
+
+                append(x.get("emit.IEST")).
+
+                append("|").
+
+                append(x.get("emit.IM")).
+
+                append("|").
+
+                append(x.get("emit.CNAE")).
+
+                append("|").
+
+                append(x.get("emit.CRT")).
+
+                append("|\n");
         //Complementos de C
         if (x.get("emit.CNPJ") != null) {
             o.append("C02|" + x.get("emit.CNPJ") + "|\n");
@@ -578,7 +626,8 @@ public class Main {
         if (x.get("dest.enderDest") != null) {
             o.append("E05|" + x.get("enderDest.xLgr") + "|" + x.get("enderDest.nro") + "|" + x.get("enderDest.xCpl") + "|" + x.get("enderDest.xBairro") + "|" + x.get("enderDest.cMun") + "|" + x.get("enderDest.xMun") + "|" + x.get("enderDest.UF") + "|" + x.get("enderDest.CEP") + "|" + x.get("enderDest.cPais") + "|" + x.get("enderDest.xPais") + "|" + x.get("enderDest.fone") + "|\n");
         }
-//        ----------------------------------------------------
+
+        //        ----------------------------------------------------
 //        ITENS IGNORADOS
 //        if (x.get("enderEmit.xLgr") + "|" + x.get("enderEmit.nro") + "|" + x.get("enderEmit.xCpl") + "|" + x.get("enderEmit.xBairro") + "|" + x.get("enderEmit.cMun") == ) {
 //
@@ -608,7 +657,7 @@ public class Main {
 //            System.out.println("----------------------..." + x.get("prod" + item + ".vSeg"));
             o.append("I|" + x.get("prod" + item + ".cProd") + "|" + x.get("prod" + item + ".cEAN") + "|" + x.get("prod" + item + ".xProd") + "|" + x.get("prod" + item + ".NCM") + "|" + x.get("prod" + item + ".cBenef") + "|" + x.get("prod" + item + ".EXTIPI") + "|" + x.get("prod" + item + ".CFOP") + "|" + x.get("prod" + item + ".uCom") + "|" + x.get("prod" + item + ".qCom") + "|" + x.get("prod" + item + ".vUnCom") + "|" + x.get("prod" + item + ".vProd") + "|" + x.get("prod" + item + ".CEANTrib") + "|" + x.get("prod" + item + ".uTrib") + "|" + x.get("prod" + item + ".qTrib") + "|" + x.get("prod" + item + ".vUnTrib") + "|" + x.get("prod" + item + ".vFrete") + "|" + x.get("prod" + item + ".vSeg") + "|" + x.get("prod" + item + ".vDesc") + "|" + x.get("prod" + item + ".vOutro") + "|" + x.get("prod" + item + ".indTot") + "|" + x.get("prod" + item + ".xPed") + "|" + x.get("prod" + item + ".nItemPed") + "|" + x.get("prod" + item + ".nFCI") + "|" + x.get("prod" + item + ".nRECOPI") + "|\n");
             if (x.get("prod" + item + ".DI") != null) {
-                o.append("I18|" + x.get("DI" + item + ".nDI") + "|" + x.get("DI" + item + ".dDI") + "|" + x.get("DI" + item + ".xLocDesemb") + "|" + x.get("DI" + item + ".UFDesemb") + "|" + x.get("DI" + item + ".dDesemb") + "|" + x.get("DI" + item + ".tpViaTransp") + "|"  + x.get("DI" + item + ".vAFRMM") + "|" + x.get("DI" + item + ".tpIntermedio") + "|" + x.get("DI" + item + ".cExportador") + "|" + x.get("DI" + item + ".tpViaTransp") + "|" + x.get("DI" + item + ".vAFRMM") + "|" + x.get("DI" + item + ".tpIntermedio") + "|" + x.get("DI" + item + ".CNPJ") + "|" + x.get("DI" + item + ".UFTerceiro") + "|\n");
+                o.append("I18|" + x.get("DI" + item + ".nDI") + "|" + x.get("DI" + item + ".dDI") + "|" + x.get("DI" + item + ".xLocDesemb") + "|" + x.get("DI" + item + ".UFDesemb") + "|" + x.get("DI" + item + ".dDesemb") + "|" + x.get("DI" + item + ".tpViaTransp") + "|" + x.get("DI" + item + ".vAFRMM") + "|" + x.get("DI" + item + ".tpIntermedio") + "|" + x.get("DI" + item + ".cExportador") + "|" + x.get("DI" + item + ".tpViaTransp") + "|" + x.get("DI" + item + ".vAFRMM") + "|" + x.get("DI" + item + ".tpIntermedio") + "|" + x.get("DI" + item + ".CNPJ") + "|" + x.get("DI" + item + ".UFTerceiro") + "|\n");
                 if (x.get("DI" + item + ".ADI") != null) {
                     o.append("I25|" + x.get("ADI" + item + ".nAdicao") + "|" + x.get("ADI" + item + ".nSeqAdic") + "|" + x.get("ADI" + item + ".cFabricante") + "|" + x.get("ADI" + item + ".vDescDI") + "|" + x.get("ADI" + item + ".nDraw") + "|\n");
                 }
@@ -850,7 +899,9 @@ public class Main {
         if (x.get("cobr.fat") != null) {
             o.append("Y02|" + x.get("fat.nFat") + "|" + x.get("fat.vOrig") + "|" + x.get("fat.vDesc") + "|" + x.get("fat.vLiq") + "|\n");
         }
-        for (int i = 1; i <= 120; i++) {
+        for (
+                int i = 1;
+                i <= 120; i++) {
             if (x.get("cobr" + i + ".dup") != null) {
                 o.append("Y07|" + x.get("dup" + i + ".nDup") + "|" + x.get("dup" + i + ".dVenc") + "|" + x.get("dup" + i + ".vDup") + "|\n");
             } else {
@@ -876,7 +927,9 @@ public class Main {
 
 //[0 a 10] {
 //Z04|xCampo|xTexto|
-        for (int i = 1; i <= 10; i++) {
+        for (
+                int i = 1;
+                i <= 10; i++) {
             if (x.get("obsCont" + i + ".xCampo") != null || x.get("obsCont" + i + ".xTexto") != null) {
                 o.append("Z04|" + x.get("obsCont" + i + ".xCampo") + "|" + x.get("obsCont" + i + ".xTexto") + "|\n");
             } else {
@@ -886,7 +939,9 @@ public class Main {
 //}
 //[0 a 10] {w
 //Z07|xCampo|xTexto|
-        for (int i = 1; i <= 10; i++) {
+        for (
+                int i = 1;
+                i <= 10; i++) {
             if (x.get("obsFisco" + i + ".xCampo") != null || x.get("obsFisco" + i + ".xTexto") != null) {
                 o.append("Z07|" + x.get("obsFisco" + i + ".xCampo") + "|" + x.get("obsFisco" + i + ".xTexto") + "|\n");
             } else {
@@ -896,7 +951,9 @@ public class Main {
 //}
 //[0 a 100] {
 //Z10|nProc|indProc|
-        for (int i = 1; i <= 10; i++) {
+        for (
+                int i = 1;
+                i <= 10; i++) {
             if (x.get("procRef" + i + ".nProc") != null || x.get("procRef" + i + ".indProc") != null) {
                 o.append("Z10|" + x.get("procRef" + i + ".nProc") + "|" + x.get("procRef" + i + ".indProc") + "|\n");
             } else {
@@ -967,17 +1024,13 @@ public class Main {
      * Executavel
      */
     public static void main(String[] args) {
-//        System.out.println("...");
         String dir = "C:\\Temp\\";
         if (args.length > 0) {
-//            System.out.println("DIRETORIO DEFINIDO: " + args[0]);
             dir = args[0];
         }
 
         Map<String, String> x;
-//        System.out.println(dir + "recebimento/xml/processar");
         File file = new File(dir + "recebimento/xml/processar");
-//        File file = new File("C:/Users/ideia/Desktop/PaserNfe/nfe");
         File arquivos[] = file.listFiles();
 
         for (File arq : arquivos) {
@@ -985,13 +1038,10 @@ public class Main {
                 list = new HashMap<String, String>();
 
                 try {
-//                    dup = 0;
-//                    det = 0;
                     Main lexml = new Main();
 
                     x = lexml.lerarq(arq.toString());
                     StringBuffer o = null;
-//                System.out.println(versao);
                     if (versao.equals("4.00")) {
                         o = geraDoc400((HashMap<String, String>) x);
                     } else if (versao.equals("3.10")) {
@@ -999,10 +1049,9 @@ public class Main {
                     }
                     x.clear();
 
-//                    System.out.println(o);
                     criaTxt(dir + "recebimento/txt/processar/" + arq.getName().replace("xml", "txt"), Pattern.compile("null").matcher(o).replaceAll(" "));
 
-//                    moveArq(arq.toString(), dir + "recebimento/xml/processado");
+                    moveArq(arq.toString(), dir + "recebimento/xml/processado");
 //                    System.out.println(Pattern.compile("null").matcher(o).replaceAll(" "));
                 } catch (Exception e) {
                 } finally {
@@ -1013,7 +1062,3 @@ public class Main {
         }
     }
 }
-//Z:\tecmedic\nfe\5638301000169\XML_NFe\2015\09\09
-//Z:\tecmedic\nfe\CaixaEntrada\Processado\2015\09\09
-
-//Z:\tecmedic\nfe\5638301000169\XML_NFe\2015\10\07
