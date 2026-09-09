@@ -1,5 +1,11 @@
 package br.inf.ideiasistemas;
 
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,13 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
-public class Main {
+public class salvafunfando {
 
     private static Map<String, String> list = new HashMap<>();
     private static String itemDet = "";
@@ -43,15 +43,6 @@ public class Main {
         SAXBuilder sb = new SAXBuilder();
 
         Document d;
-        dup = 0;
-        det = 0;
-        vol = 0;
-        rastro = 0;
-        chavesRef = 0;
-        id = "";
-        versao = "";
-        tipoNota = "";
-
         try {
             d = sb.build(f);
 //recupera o elemento root
@@ -61,12 +52,9 @@ public class Main {
             List atributes = nfe.getAttributes();
             Iterator i_atr = atributes.iterator();
 
+//Itera atributos filhos
             while (i_atr.hasNext()) {
                 Attribute atrib = (Attribute) i_atr.next();
-                if (nfe.getName().equals("NFSe") && atrib.getName().equals("versao")) {
-                    versao = atrib.getValue();
-                    tipoNota = "NFSe";
-                }
             }
 
 //Recupera elementos filhos (children)
@@ -80,9 +68,9 @@ public class Main {
             }
 
         } catch (JDOMException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(salvafunfando.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(salvafunfando.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return list;
@@ -110,7 +98,6 @@ public class Main {
             } else {
                 itemDet = "";
             }
-
             if (element.getName().equals("infNFe")) {
                 if (atrib.getName().equals("Id")) {
                     id = atrib.getValue();
@@ -120,10 +107,12 @@ public class Main {
                 }
                 tipoNota = "NFe";
             }
-
             if (element.getName().equals("infNFSe")) {
                 if (atrib.getName().equals("Id")) {
                     id = atrib.getValue();
+                }
+                if (atrib.getName().equals("1.01")) {
+                    versao = atrib.getValue();
                 }
                 tipoNota = "NFSe";
             }
@@ -135,20 +124,14 @@ public class Main {
 
         //Itera elementos filhos, e filhos do dos filhos
         while (it.hasNext()) {
-            String tags = "";
-
-            if (tipoNota.equals("NFe")) {
-                tags = "ide|emit|dest|total|total|infAdic|Signature|infNFe";
-            }
-            if (tipoNota.equals("NFSe")) {
-                tags = "infNFSe|infDPS|emit|valores|total";
-            }
+            String tags = "ide|emit|dest|total|total|infAdic|Signature|infNFe";
 
             Element el = (Element) it.next();
             if (el.getName().equals("vol")) {
                 vol++;
                 el.setName(el.getName() + vol);
             }
+            // ajustei aqui o lance
             if (el.getName().equals("gRed")) {
                 el.setName("gRed" + element.getName());
             }
@@ -176,28 +159,19 @@ public class Main {
                 list.put(element.getName() + itemDet + "." + el.getName(), new String(el.getText()));
             }
             trataElement(el);
-//            if (tipoNota.equals("NFSe")) {
-//                String tags = "infNFSe|infDPS|emit|valores|total";
-//
-//                Element el = (Element) it.next();
-//                list.put(element.getName() + "." + el.getName(), new String(el.getText()));
-//                trataElement(el);
-//            }
-
-
         }
         vol = 0;
         return list;
     }
 
     /**
-     * Realiza o preenchimento do template da nfe 4.00 versão txt, obedecendo as
-     * condições para cada item.
+     * Realiza o preenchimento do template da nfe 4.00 versÃ£o txt, obdecendo as
+     * condiÃ§Ãµes para cada item.
      */
     public static StringBuffer geraDoc400(HashMap<String, String> x) {
         int volume = 1;
         StringBuffer o = new StringBuffer();
-        o.append("NOTA FISCAL\n");
+        o.append("NOTA FISCAL|1|\n");
         o.append("0|" + id + "|\n");
         o.append("A|" + versao + "|NFe|\n");
         o.append("B|" + x.get("ide.cUF") + "|" + x.get("ide.cNF") + "|" + x.get("ide.natOp") + "|" + x.get("ide.mod") + "|" + x.get("ide.serie") + "|" + x.get("ide.nNF") + "|" + x.get("ide.dhEmi") + "|" + x.get("ide.dhSaiEnt") + "|" + x.get("ide.tpNF") + "|" + x.get("ide.idDest") + "|" + x.get("ide.cMunFG") + "|" + x.get("ide.tpImp") + "|" + x.get("ide.tpEmis") + "|" + x.get("ide.cDV") + "|" + x.get("ide.tpAmb") + "|" + x.get("ide.finNFe") + "|" + x.get("ide.indFinal") + "|" + x.get("ide.indPres") + "|" + x.get("ide.procEmi") + "|" + x.get("ide.verProc") + "|" + x.get("ide.dhCont") + "|" + x.get("ide.xJust") + "|\n");
@@ -357,7 +331,7 @@ public class Main {
             } else if (x.get("ICMS" + item + ".ICMS20") != null) {
                 o.append("N04|" + x.get("ICMS20" + item + ".orig") + "|" + x.get("ICMS20" + item + ".CST") + "|" + x.get("ICMS20" + item + ".modBC") + "|" + x.get("ICMS20" + item + ".pRedBC") + "|" + x.get("ICMS20" + item + ".vBC") + "|" + x.get("ICMS20" + item + ".pICMS") + "|" + x.get("ICMS20" + item + ".vICMS") + "|" + x.get("ICMS20" + item + ".vBCFCP") + "|" + x.get("ICMS20" + item + ".pFCP") + "|" + x.get("ICMS20" + item + ".vFCP") + "|" + x.get("ICMS20" + item + ".vICMSDeson") + "|" + x.get("ICMS20" + item + ".motDesICMS") + "|\n");
             } else if (x.get("ICMS" + item + ".ICMS30") != null) {
-                o.append("N05|" + x.get("ICMS30" + item + ".orig") + "|" + x.get("ICMS30" + item + ".CST") + "|" + x.get("ICMS30" + item + ".modBCST") + "|" + x.get("ICMS30" + item + ".pMVAST") + "|" + x.get("ICMS30" + item + ".pRedBCST") + "|" + x.get("ICMS30" + item + ".vBCST") + "|" + x.get("ICMS30" + item + ".pICMSST") + "|" + x.get("ICMS30" + item + ".vICMSST") + "|" + x.get("ICMS30" + item + ".vBCFCPST") + "|" + x.get("ICMS30" + item + ".pFCPST") + "|" + x.get("ICMS30" + item + ".vFCPST") + "|" + x.get("ICMS30" + item + ".vICMSDeson") + "|" + x.get("ICMS30" + item + ".motDesICMS") + "|\n");
+                o.append("N05|" + x.get("ICMS30" + item + ".orig") + "|" + x.get("ICMS30" + item + ".CST") + "|" + x.get("ICMS30" + item + ".modBCST") + "|" + x.get("ICMS30" + item + ".pMVAST") + "|" + x.get("ICMS30" + item + ".pRedBCST") + "|" + x.get("ICMS30" + item + ".vBCST") + "|" + x.get("ICMS30" + item + ".pICMSST") + "|" + x.get("ICMS30" + item + ".vICMSST") + "|" + x.get("ICMS30" + item + ".vBCFCPST") + "|" + x.get("ICMS30" + item + ".pFCPST") + "|" + x.get("ICMS20" + item + ".vFCPST") + "|" + x.get("ICMS30" + item + ".vICMSDeson") + "|" + x.get("ICMS30" + item + ".motDesICMS") + "|\n");
             } else if (x.get("ICMS" + item + ".ICMS40") != null || x.get("ICMS" + item + ".ICMS41") != null || x.get("ICMS" + item + ".ICMS50") != null) {
                 String tagPai = "";
                 if (x.get("ICMS" + item + ".ICMS40") != null) {
@@ -479,7 +453,7 @@ public class Main {
         if (x.get("total.ISSQNTot") != null) {
             o.append("W17|" + x.get("ISSQNTot.vServ") + "|" + x.get("ISSQNTot.vBC") + "|" + x.get("ISSQNTot.vISS") + "|" + x.get("ISSQNTot.vPIS") + "|" + x.get("ISSQNTot.vCOFINS") + "|" + x.get("ISSQNTot.dCompet") + "|" + x.get("ISSQNTot.vDeducao") + "|" + x.get("ISSQNTot.vOutro") + "|" + x.get("ISSQNTot.vDescIncond") + "|" + x.get("ISSQNTot.vDescCond") + "|" + x.get("ISSQNTot.vISSRet") + "|" + x.get("ISSQNTot.cRegTrib") + "|\n");
         }
-        if (x.get("total.retTrib") != null) {
+        if (x.get("total.retTrib ") != null) {
             o.append("W23|" + x.get("retTrib.vRetPIS") + "|" + x.get("retTrib.vRetCOFINS") + "|" + x.get("retTrib.vRetCSLL") + "|" + x.get("retTrib.vBCIRRF") + "|" + x.get("retTrib.vIRRF") + "|" + x.get("retTrib.vBCRetPrev") + "|" + x.get("retTrib.vRetPrev") + "|\n");
         }
 //        ----------------------------------------------------
@@ -612,30 +586,12 @@ public class Main {
 
     }
 
-    public static StringBuffer geraDocNFSe(HashMap<String, String> x) {
-        StringBuffer o = new StringBuffer();
-        o.append("NFSe\n");
-        o.append("0" + "|" + id +"|" + versao + "|\n");
-        o.append("A|" + x.get("infNFSe.nNFSe") + "|" + x.get("infNFSe.dhProc") + "|\n");
-        o.append("B|" + x.get("infDPS.nDPS") + "|" + x.get("infDPS.serie") + "|\n");
-        o.append("C|" + x.get("emit.CNPJ") + "|" + x.get("emit.xNome") + "|\n");
-        o.append("D|" + x.get("toma.CNPJ") + "|" + x.get("toma.xNome") + "|\n");
-        o.append("E|" + x.get("cServ.cTribNac") + "|" + x.get("cServ.xDescServ") + "|" + x.get("cServ.cNBS") + "|\n");
-        o.append("F|" + x.get("vServPrest.vServ") + "|\n");
-        o.append("G|" + x.get("valores.vBC") + "|" + x.get("valores.pAliqAplic") + "|" + x.get("valores.vISSQN") + "|" + x.get("valores.vTotalRet") + "|" + x.get("valores.vLiq") + "|\n");
-        o.append("H|" + x.get("tribMun.tribISSQN") + "|" + x.get("tribMun.tpRetISSQN") + "|\n");
-        o.append("I|" + x.get("vTotTrib.vTotTribFed") + "|" + x.get("vTotTrib.vTotTribEst") + "|"  + x.get("vTotTrib.vTotTribMun") +"|\n");
-
-        return o;
-    }
-
-
     /**
      * Executavel
      */
     public static void main(String[] args) {
-//        String dir = "C:\\Temp\\";
-        String dir = "Y:\\orpec\\";
+        String dir = "C:\\Temp\\";
+//        String dir = "Y:\\nucleomed\\";
         if (args.length > 0) {
             dir = args[0];
         }
@@ -649,21 +605,19 @@ public class Main {
                 list = new HashMap<String, String>();
 
                 try {
-                    Main lexml = new Main();
+                    salvafunfando lexml = new salvafunfando();
 
                     x = lexml.lerarq(arq.toString());
                     StringBuffer o = null;
                     if (versao.equals("4.00") && tipoNota.equals("NFe")) {
                         o = geraDoc400((HashMap<String, String>) x);
                     }
-                    if (tipoNota.equals("NFSe")) {
-                        o = geraDocNFSe((HashMap<String, String>) x);
-                    }
                     x.clear();
 
                     criaTxt(dir + "recebimento/txt/processar/" + arq.getName().replace("xml", "txt"), Pattern.compile("null").matcher(o).replaceAll(" "));
 
                     moveArq(arq.toString(), dir + "recebimento/xml/processado");
+//                    System.out.println(Pattern.compile("null").matcher(o).replaceAll(" "));
                 } catch (Exception e) {
                 } finally {
                     x = new HashMap<String, String>();
