@@ -32,7 +32,8 @@ public class Main {
 
     /**
      * Realiza a leitura e parser do xml, deixando os dados disponiveis em um
-     * hashmap. As chaves do hash estÃ£o definidas de acordo com o nome da tag
+     * hashmap. As chaves do hash estÃ£o definidas de acordo com o
+     * nome da tag
      * unido com a tag pai segindo o formato: TagPai.TagFilho No caso de itens
      * tags que se repetem, como os itens da nota, deve se respeitar o padÃ£o:
      * tagPai + numero contador de itens + .tagfilho (ex. Item1.atributo)
@@ -324,7 +325,7 @@ public class Main {
 //          --------------------------------------------------
 //          Rastreabilidade
             if (x.get("prod" + item + ".rastro1.nLote") != null) {
-                for (int i = 1; i <= 120; i++) {
+                for (int i = 1; i <= 999; i++) {
                     if (x.get("prod" + item + ".rastro" + i + ".nLote") != null) {
                         o.append("I80|" + x.get("prod" + item + ".rastro" + i + ".nLote") + "|" + x.get("prod" + item + ".rastro" + i + ".qLote") + "|" + x.get("prod" + item + ".rastro" + i + ".dFab") + "|" + x.get("prod" + item + ".rastro" + i + ".dVal") + "|" + x.get("prod" + item + ".rastro" + i + ".cAgreg") + "|\n");
                     } else {
