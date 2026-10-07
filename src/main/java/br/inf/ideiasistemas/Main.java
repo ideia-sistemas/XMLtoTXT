@@ -625,12 +625,14 @@ public class Main {
         o.append("F|" + x.get("vServPrest.vServ") + "|\n");
         o.append("G|" + x.get("valores.vBC") + "|" + x.get("valores.pAliqAplic") + "|" + x.get("valores.vISSQN") + "|" + x.get("valores.vTotalRet") + "|" + x.get("valores.vLiq") + "|\n");
         o.append("H|" + x.get("tribMun.tribISSQN") + "|" + x.get("tribMun.tpRetISSQN") + "|\n");
-        o.append("I|" + x.get("vTotTrib.vTotTribFed") + "|" + x.get("vTotTrib.vTotTribEst") + "|"  + x.get("vTotTrib.vTotTribMun") +"|\n");
-        o.append("J|" + x.get("IBSCBS.finNFSe") + "|" + x.get("IBSCBS.indFinal") + "|"  + x.get("IBSCBS.cIndOp") + x.get("IBSCBS.indDest") + "|\n");
-        o.append("K|" + x.get("gIBSCBS.CST") + "|" + x.get("gIBSCBS.cClassTrib") + "|\n");
-        o.append("L|" + x.get("valores.vBC") + "|\n");
-        o.append("M|" + x.get("gIBS.vIBSTot") + "|" + x.get("gIBSUFTot.vIBSUF") + "|" + x.get("gIBSMunTot.vIBSMun")+ "|\n");
-        o.append("N|" + x.get("gCBS.vCBS") + "|\n");
+        o.append("I|" + x.get("piscofins.CST") + "|" + x.get("piscofins.vBCPisCofins")  + "|" + x.get("piscofins.pAliqPis") + "|" + x.get("piscofins.pAliqCofins") + "|" + x.get("piscofins.vPis") + "|" + x.get("piscofins.vCofins") + "|" + x.get("piscofins.tpRetPisCofins") + "|\n");
+        o.append("J|" + x.get("tribFed.vRetIRRF") + "|" + x.get("tribFed.vRetCSLL")  + "|\n");
+        o.append("K|" + x.get("vTotTrib.vTotTribFed") + "|" + x.get("vTotTrib.vTotTribEst") + "|"  + x.get("vTotTrib.vTotTribMun") +"|\n");
+        o.append("L|" + x.get("IBSCBS.finNFSe") + "|" + x.get("IBSCBS.indFinal") + "|"  + x.get("IBSCBS.cIndOp") + "|" + x.get("IBSCBS.indDest") + "|\n");
+        o.append("M|" + x.get("gIBSCBS.CST") + "|" + x.get("gIBSCBS.cClassTrib") + "|\n");
+        o.append("N|" + x.get("valores.vBC") + "|\n");
+        o.append("O|" + x.get("gIBS.vIBSTot") + "|" + x.get("gIBSUFTot.vIBSUF") + "|" + x.get("gIBSMunTot.vIBSMun")+ "|\n");
+        o.append("P|" + x.get("gCBS.vCBS") + "|\n");
 
 
         return o;
