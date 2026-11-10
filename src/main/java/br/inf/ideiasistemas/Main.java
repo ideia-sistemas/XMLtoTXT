@@ -128,6 +128,16 @@ public class Main {
                 }
                 tipoNota = "NFSe";
             }
+            if (element.getName().equals("infNFCom")) {
+                if (atrib.getName().equals("Id")) {
+                    id = atrib.getValue();
+                }
+                if (atrib.getName().equals("versao")) {
+                    versao = atrib.getValue();
+                }
+                tipoNota = "NFCom";
+            }
+
 
         }
 //Recupera  elementos filhos (children)
@@ -144,6 +154,10 @@ public class Main {
             if (tipoNota.equals("NFSe")) {
                 tags = "infNFSe|infDPS|emit|valores|total";
             }
+            if (tipoNota.equals("NFCom")) {
+                tags = "infNFCom|emit|dest|total|ICMSTot;vRetTribTot|gFat";
+            }
+
 
             Element el = (Element) it.next();
             if (el.getName().equals("vol")) {
@@ -177,14 +191,6 @@ public class Main {
                 list.put(element.getName() + itemDet + "." + el.getName(), new String(el.getText()));
             }
             trataElement(el);
-//            if (tipoNota.equals("NFSe")) {
-//                String tags = "infNFSe|infDPS|emit|valores|total";
-//
-//                Element el = (Element) it.next();
-//                list.put(element.getName() + "." + el.getName(), new String(el.getText()));
-//                trataElement(el);
-//            }
-
 
         }
         vol = 0;
@@ -583,6 +589,129 @@ public class Main {
         return o;
     }
 
+    public static StringBuffer geraDocNFCom(HashMap<String, String> x) {
+        int volume = 1;
+        StringBuffer o = new StringBuffer();
+        o.append("NFCom\n");
+        o.append("0|" + id + "|\n");
+        o.append("A|" + versao + "|NFCom|\n");
+        o.append("B|" + x.get("ide.cUF") + "|" + x.get("ide.nNF") + "|" + x.get("ide.mod") + "|" + x.get("ide.serie") + "|" + x.get("ide.dhEmi") + "|" + x.get("ide.cMunFG") + x.get("ide.finNFCom")  + "|\n");
+        o.append("C|" + x.get("emit.CNPJ") + "|" + x.get("emit.xNome") + "|\n");
+        o.append("E|" + x.get("dest.CNPJ") + "|" + x.get("dest.xNome") + "|\n");
+//ITENS DA NFCom
+        int item = 1;
+        while (x.get("det" + item + ".prod") != null) {
+
+            o.append("H|" + item + "| \n");
+//        ----------------------------------------------------
+            o.append("I|" + x.get("prod" + item + ".cProd") + "|" + x.get("prod" + item + ".xProd") + "|" + x.get("prod" + item + ".cClass") + "|" + x.get("prod" + item + ".CFOP") + "|" + x.get("prod" + item + ".uMed") + "|" + x.get("prod" + item + ".qFaturada") + "|" + x.get("prod" + item + ".vItem") + "|" + x.get("prod" + item + ".vDesc") + "|" + x.get("prod" + item + ".vOutro") + "|" + x.get("prod" + item + ".vProd") + "|\n");
+//        ----------------------------------------------------
+            o.append("N|\n");
+//        ----------------------------------------------------
+            if (x.get("imposto" + item + ".ICMS00") != null) {
+                o.append("N02|" + x.get("ICMS00" + item + ".orig") + "|" + x.get("ICMS00" + item + ".CST") + "|" + x.get("ICMS00" + item + ".modBC") + "|" + x.get("ICMS00" + item + ".vBC") + "|" + x.get("ICMS00" + item + ".pICMS") + "|" + x.get("ICMS00" + item + ".vICMS") + "|" + x.get("ICMS00" + item + ".pFCP") + "|" + x.get("ICMS00" + item + ".vFCP") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS10") != null) {
+                o.append("N03|" + x.get("ICMS10" + item + ".orig") + "|" + x.get("ICMS10" + item + ".CST") + "|" + x.get("ICMS10" + item + ".modBC") + "|" + x.get("ICMS10" + item + ".vBC") + "|" + x.get("ICMS10" + item + ".pICMS") + "|" + x.get("ICMS10" + item + ".vICMS") + "|" + x.get("ICMS10" + item + ".vBCFCP") + "|" + x.get("ICMS10" + item + ".pFCP") + "|" + x.get("ICMS10" + item + ".vFCP") + "|" + x.get("ICMS10" + item + ".modBCST") + "|" + x.get("ICMS10" + item + ".pMVAST") + "|" + x.get("ICMS10" + item + ".pRedBCST") + "|" + x.get("ICMS10" + item + ".vBCST") + "|" + x.get("ICMS10" + item + ".pICMSST") + "|" + x.get("ICMS10" + item + ".vICMSST") + "|" + x.get("ICMS10" + item + ".vBCFCPST") + "|" + x.get("ICMS10" + item + ".pFCPST") + "|" + x.get("ICMS10" + item + ".vFCPST") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS20") != null) {
+                o.append("N04|" + x.get("ICMS20" + item + ".orig") + "|" + x.get("ICMS20" + item + ".CST") + "|" + x.get("ICMS20" + item + ".modBC") + "|" + x.get("ICMS20" + item + ".pRedBC") + "|" + x.get("ICMS20" + item + ".vBC") + "|" + x.get("ICMS20" + item + ".pICMS") + "|" + x.get("ICMS20" + item + ".vICMS") + "|" + x.get("ICMS20" + item + ".vBCFCP") + "|" + x.get("ICMS20" + item + ".pFCP") + "|" + x.get("ICMS20" + item + ".vFCP") + "|" + x.get("ICMS20" + item + ".vICMSDeson") + "|" + x.get("ICMS20" + item + ".motDesICMS") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS30") != null) {
+                o.append("N05|" + x.get("ICMS30" + item + ".orig") + "|" + x.get("ICMS30" + item + ".CST") + "|" + x.get("ICMS30" + item + ".modBCST") + "|" + x.get("ICMS30" + item + ".pMVAST") + "|" + x.get("ICMS30" + item + ".pRedBCST") + "|" + x.get("ICMS30" + item + ".vBCST") + "|" + x.get("ICMS30" + item + ".pICMSST") + "|" + x.get("ICMS30" + item + ".vICMSST") + "|" + x.get("ICMS30" + item + ".vBCFCPST") + "|" + x.get("ICMS30" + item + ".pFCPST") + "|" + x.get("ICMS30" + item + ".vFCPST") + "|" + x.get("ICMS30" + item + ".vICMSDeson") + "|" + x.get("ICMS30" + item + ".motDesICMS") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS40") != null || x.get("ICMS" + item + ".ICMS41") != null || x.get("ICMS" + item + ".ICMS50") != null) {
+                String tagPai = "";
+                if (x.get("imposto" + item + ".ICMS40") != null) {
+                    tagPai = "ICMS40" + item;
+                } else if (x.get("imposto" + item + ".ICMS41") != null) {
+                    tagPai = "ICMS41" + item;
+                } else if (x.get("imposto" + item + ".ICMS50") != null) {
+                    tagPai = "ICMS50" + item;
+                }
+                o.append("N06|" + x.get(tagPai + ".orig") + "|" + x.get(tagPai + ".CST") + "|" + x.get(tagPai + ".vICMSDeson") + "|" + x.get(tagPai + ".motDesICMS") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS51") != null) {
+                o.append("N07|" + x.get("ICMS51" + item + ".orig") + "|" + x.get("ICMS51" + item + ".CST") + "|" + x.get("ICMS51" + item + ".modBC") + "|" + x.get("ICMS51" + item + ".pRedBC") + "|" + x.get("ICMS51" + item + ".VBC") + "|" + x.get("ICMS51" + item + ".pICMS") + "|" + x.get("ICMS51" + item + ".vICMSOp") + "|" + x.get("ICMS51" + item + ".pDif") + "|" + x.get("ICMS51" + item + ".vICMSDif") + "|" + x.get("ICMS51" + item + ".vICMS") + "|" + x.get("ICMS51" + item + ".vBCFCP") + "|" + x.get("ICMS51" + item + ".pFCP") + "|" + x.get("ICMS51" + item + ".vFCP") + "|\n");
+            } else if (x.get("imposto" + item + ".ICMS60") != null) {
+                o.append("N08|" + x.get("ICMS60" + item + ".orig") + "|" + x.get("ICMS60" + item + ".CST") + "|" + x.get("ICMS60" + item + ".vBCSTRet") + "|" + x.get("ICMS60" + item + ".pST") + "|" + x.get("ICMS60" + item + ".vICMSSTRet") + "|" + x.get("ICMS60" + item + ".vBCFCPSTRet") + "|" + x.get("ICMS60" + item + ".pFCPSTRet") + "|" + x.get("ICMS60" + item + ".vFCPSTRet") + "|\n");
+
+            } else if (x.get("imposto" + item + ".ICMS70") != null) {
+                o.append("N09|" + x.get("ICMS70" + item + ".orig") + "|" + x.get("ICMS70" + item + ".CST") + "|" + x.get("ICMS70" + item + ".modBC") + "|" + x.get("ICMS70" + item + ".pRedBC") + "|" + x.get("ICMS70" + item + ".vBC") + "|" + x.get("ICMS70" + item + ".pICMS") + "|" + x.get("ICMS70" + item + ".vICMS") + "|" + x.get("ICMS70" + item + ".vBCFCP") + "|" + x.get("ICMS70" + item + ".pFCP") + "|" + x.get("ICMS70" + item + ".vFCP") + x.get("ICMS70" + item + ".modBCST") + "|" + x.get("ICMS70" + item + ".pMVAST") + "|" + x.get("ICMS70" + item + ".pRedBCST") + "|" + x.get("ICMS70" + item + ".vBCST") + "|" + x.get("ICMS70" + item + ".pICMSST") + "|" + x.get("ICMS70" + item + ".vICMSST") + "|" + x.get("ICMS70" + item + ".vBCFCPST") + "|" + x.get("ICMS70" + item + ".pFCPST") + "|" + x.get("ICMS70" + item + ".vFCPST") + "|" + x.get("ICMS70" + item + ".vICMSDeson") + "|" + x.get("ICMS70" + item + ".motDesICMS") + "|\n");
+
+            } else if (x.get("imposto" + item + ".ICMS90") != null) {
+                o.append("N10|" + x.get("ICMS90" + item + ".orig") + "|" + x.get("ICMS90" + item + ".CST") + "|" + x.get("ICMS90" + item + ".modBC") + "|" + x.get("ICMS90" + item + ".pRedBC") + "|" + x.get("ICMS90" + item + ".vBC") + "|" + x.get("ICMS90" + item + ".pICMS") + "|" + x.get("ICMS90" + item + ".vICMS") + "|" + x.get("ICMS90" + item + ".vBCFCP") + "|" + x.get("ICMS90" + item + ".pFCP") + "|" + x.get("ICMS90" + item + ".vFCP") + "|" + x.get("ICMS90" + item + ".modBCST") + "|" + x.get("ICMS90" + item + ".pMVAST") + "|" + x.get("ICMS90" + item + ".pRedBCST") + "|" + x.get("ICMS90" + item + ".vBCST") + "|" + x.get("ICMS90" + item + ".pICMSST") + "|" + x.get("ICMS90" + item + ".vICMSST") + "|" + x.get("ICMS90" + item + ".vBCFCPST") + "|" + x.get("ICMS90" + item + ".pFCPST") + "|" + x.get("ICMS90" + item + ".vFCPST") + "|" + x.get("ICMS90" + item + ".vICMSDeson") + "|" + x.get("ICMS90" + item + ".motDesICMS") + "|\n");
+            }
+//        ----------------------------------------------------
+            if (x.get("imposto" + item + ".PIS") != null) {
+                o.append("Q|\n");
+                if (x.get("PISAliq" + item + ".CST") != null) {
+                    o.append("Q02|" + x.get("PISAliq" + item + ".CST") + "|" + x.get("PISAliq" + item + ".vBC") + "|" + x.get("PISAliq" + item + ".pPIS") + "|" + x.get("PISAliq" + item + ".vPIS") + "|\n");
+                } else if (x.get("PISQtde" + item + ".CST") != null) {
+                    o.append("Q03|" + x.get("PISQtde" + item + ".CST") + "|" + x.get("PISQtde" + item + ".qBCProd") + "|" + x.get("PISQtde" + item + ".vAliqProd") + x.get("PISQtde" + item + ".vPIS") + "|\n");
+                } else if (x.get("PISNT" + item + ".CST") != null) {
+                    o.append("Q04|" + x.get("PISNT" + item + ".CST") + "|\n");
+                } else if (x.get("PISOutr" + item + ".CST") != null) {
+                    o.append("Q05|" + x.get("PISOutr" + item + ".CST") + "|" + x.get("PISOutr" + item + ".vPIS") + "|\n");
+                }
+            }
+//        ----------------------------------------------------
+            if (x.get("PIS" + item + ".PISNT") != null) {
+                o.append("R|" + x.get("PISNT" + item + ".vPIS") + "|\n");
+
+                if (x.get("PISNT" + item + ".pPIS") != null) {
+                    o.append("R02|" + x.get("PISNT" + item + ".vBC") + "|" + x.get("PISNT" + item + ".pPIS") + "|\n");
+                } else {
+                    o.append("R04|" + x.get("PISNT" + item + ".qBCProd") + "|" + x.get("PISNT" + item + ".vAliqProd") + x.get("PISNT" + item + ".vPIS") + "|\n");
+                }
+            }
+//        ----------------------------------------------------
+            if (x.get("imposto" + item + ".COFINS") != null) {
+                o.append("S|\n");
+                if (x.get("COFINSAliq" + item + ".CST") != null) {
+                    o.append("S02|" + x.get("COFINSAliq" + item + ".CST") + "|" + x.get("COFINSAliq" + item + ".vBC") + "|" + x.get("COFINSAliq" + item + ".pCOFINS") + "|" + x.get("COFINSAliq" + item + ".vCOFINS") + "|\n");
+                } else if (x.get("COFINSQtde" + item + ".CST") != null) {
+                    o.append("S03|" + x.get("COFINSQtde" + item + ".CST") + "|" + x.get("COFINSQtde" + item + ".qBCProd") + "|" + x.get("COFINSQtde" + item + ".vAliqProd") + "|" + x.get("COFINSQtde" + item + ".vCOFINS") + "|\n");
+                } else if (x.get("COFINSNT" + item + ".CST") != null) {
+                    o.append("S04|" + x.get("COFINSNT" + item + ".CST") + "|\n");
+                } else if (x.get("COFINSOutr" + item + ".CST") != null) {
+                    o.append("S05|" + x.get("COFINSOutr" + item + ".CST") + "|" + x.get("COFINSOutr" + item + ".vCOFINS") + "|\n");
+                    if (x.get("COFINSOutr" + item + ".pCOFINS") != null) {
+                        o.append("S07|" + x.get("COFINSOutr" + item + ".vBC") + "|" + x.get("COFINSOutr" + item + ".pCOFINS") + "|\n");
+                    } else {
+                        o.append("S06|" + x.get("COFINSOutr" + item + ".qBCProd") + "|" + x.get("COFINSOutr" + item + ".vAliqProd") + "|\n");
+                    }
+                }
+//        ----------------------------------------------------
+                if (x.get("COFINS" + item + ".COFINSST") != null) {
+                    o.append("T|" + x.get("COFINSST" + item + ".vCOFINS") + "|\n");
+                    if (x.get("COFINSST" + item + ".pCOFINS") != null) {
+                        o.append("T02|" + x.get("COFINSST" + item + ".vBC") + "|" + x.get("COFINSST" + item + ".pCOFINS") + "|\n");
+                    } else {
+                        o.append("T04|" + x.get("COFINSST" + item + ".qBCProd") + "|" + x.get("COFINSST" + item + ".vAliqProd") + "|\n");
+                    }
+                }
+            }
+//        ----------------------------------------------------
+            if (x.get("IBSCBS" + item + ".CST") != null) {
+                o.append("UB12|" + x.get("IBSCBS" + item + ".CST") + "|" + x.get("IBSCBS" + item + ".cClassTrib") + "|\n");
+                o.append("UB15|" + x.get("gIBSCBS" + item + ".vBC") + "|" + x.get("gIBSCBS" + item + ".vIBS") + "|\n");
+                o.append("UB17|" + x.get("gIBSUF" + item + ".pIBSUF") + "|" + x.get("gIBSUF" + item + ".vIBSUF") + "|\n");
+                o.append("UB36|" + x.get("gIBSMun" + item + ".pIBSMun") + "|" + x.get("gIBSMun" + item +  ".vIBSMun") + "|\n");
+                o.append("UB55|" + x.get("gCBS" + item + ".pCBS") + "|" + x.get("gCBS" + item +  ".vCBS") + "|\n");
+            };
+            item++;
+
+        }
+//        FIM DE ITENS
+//        ----------------------------------------------------
+        o.append("W|\n");
+        o.append("W01|" + x.get("total.vProd") + "|" + x.get("total.vCOFINS") + "|" + x.get("total.vPIS") + "|" + x.get("total.vFUNTTEL") + "|" + x.get("total.vFUST") + "|" + x.get("total.vDesc") +  "|" + x.get("total.vOutro") + "|" + x.get("total.vNF") +"|\n");
+        o.append("W02|" + x.get("ICMSTot.vBC") + "|" + x.get("ICMSTot.vICMS") + "|" + x.get("ICMSTot.vICMSDeson") + "|" + x.get("ICMSTot.vFCP") + "|\n");
+//        ----------------------------------------------------
+        o.append("Y|\n");
+        if (x.get("gFat.dVencFat") != null) {
+            o.append("Y02|" + x.get("gFat.dVencFat") + "|\n");
+        }
+
+        return o;
+    }
+
     /**
      * Cria arquivo txt com nome e conteudo recebidos nos parametros
      */
@@ -623,7 +752,7 @@ public class Main {
         o.append("D|" + x.get("toma.CNPJ") + "|" + x.get("toma.xNome") + "|\n");
         o.append("E|" + x.get("cServ.cTribNac") + "|" + x.get("cServ.xDescServ") + "|" + x.get("cServ.cNBS") + "|\n");
         o.append("F|" + x.get("vServPrest.vServ") + "|\n");
-        o.append("G|" + x.get("valores.vBC") + "|" + x.get("valores.pAliqAplic") + "|" + x.get("valores.vISSQN") + "|" + x.get("valores.vTotalRet") + "|" + x.get("valores.vLiq") + "|\n");
+        o.append("G|" + x.get("valores.vBC") + "|" + x.get("valores.pAliqAplic") + "|" + x.get("valores.vISSQN") + "|" + x.get("tribFed.vRetCP") + "|" + x.get("valores.vLiq") + "|\n");
         o.append("H|" + x.get("tribMun.tribISSQN") + "|" + x.get("tribMun.tpRetISSQN") + "|\n");
         o.append("I|" + x.get("piscofins.CST") + "|" + x.get("piscofins.vBCPisCofins")  + "|" + x.get("piscofins.pAliqPis") + "|" + x.get("piscofins.pAliqCofins") + "|" + x.get("piscofins.vPis") + "|" + x.get("piscofins.vCofins") + "|" + x.get("piscofins.tpRetPisCofins") + "|\n");
         o.append("J|" + x.get("tribFed.vRetIRRF") + "|" + x.get("tribFed.vRetCSLL")  + "|\n");
@@ -667,6 +796,9 @@ public class Main {
                     }
                     if (tipoNota.equals("NFSe")) {
                         o = geraDocNFSe((HashMap<String, String>) x);
+                    }
+                    if (tipoNota.equals("NFCom")) {
+                        o = geraDocNFCom((HashMap<String, String>) x);
                     }
                     x.clear();
 
